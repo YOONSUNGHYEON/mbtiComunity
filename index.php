@@ -1,60 +1,34 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
-
-<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-<link rel="stylesheet"
-	href="css/font-awesome.min.css">
-
-
-<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
-<link rel="stylesheet" href="css/prism-okaidia.css">
-
-	<link rel="stylesheet" type="text/css" href="css/main.css" />
-
-
-<link rel="stylesheet" type="text/css" href="css/_bootswatch.scss" />
-<script type="text/javascript" async="" src="js/custom.js"></script>
-<script
-	src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-</head>
-<body>
 <?php
-require_once ('nav.html');
-?>
+require_once ('startsession.php');
+require_once ('header.php');
+require_once ('appvars.php');
+require_once ('connectvars.php');
 
-	<div id="main-wrapper" class="content">
-	<h1>MBTI Community</h1>
-		<div id="content-wrapper" class="">
-			<div class="d-table gap-3">
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">INTJ</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">INTP</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ENTJ</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ENTP</button>
-			</div>
-			<div class="d-table gap-3">
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ISTJ</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ISFJ</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ESTJ</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ESFJ</button>
-			</div>
-			<div class="d-table gap-3">
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ISTP</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ISFP</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ESTP</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ESFP</button>
-			</div>
-			<div class="d-table gap-3">
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">INFJ</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">INFP</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ENFJ</button>
-				<button class="btn btn-lg btn-primary mbti-btn" type="button">ENFP</button>
-			</div>
-		</div>
-	</div>
-</body>
-</html>
+// Show the navigation menu
+require_once ('navmenu.php');
+$dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+$query = "SELECT * FROM tMbtiOption";
+$data = mysqli_query($dbc, $query);
+$responses = array();
+while ($row = mysqli_fetch_array($data)) {
+    array_push($responses, $row);
+}
+
+echo ' <div id="main-wrapper" class="content">';
+echo '<h1>MBTI Community</h1>';
+echo '<div id="content-wrapper" class="">';
+
+for ($i = 0; $i < count($responses); $i = $i + 4) {
+    echo ' <div class="d-table gap-3">';
+    for ($j = $i; $j < $i + 4; $j ++) {
+        echo '<a class="btn btn-lg btn-primary mbti-btn" type="button" href="board.php?id=' . $responses[$j]['nSeq'] . '">' . $responses[$j]['sName'] . '</a>';
+    }
+    echo '</div>';
+}
+
+echo '</div>';
+echo '</div>';
+echo '</body>';
+echo '</html>';
+require_once ('footer.php');
