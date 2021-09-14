@@ -9,6 +9,7 @@
 <link rel="stylesheet" type="text/css" href="css/bootstrap.css" />
 <link rel="stylesheet" href="css/prism-okaidia.css">
 <link rel="stylesheet" type="text/css" href="css/main.css" />
+<link rel="stylesheet" type="text/css" href="css/board.css" />
 <link rel="stylesheet" type="text/css" href="css/_bootswatch.scss" />
 <script type="text/javascript" async="" src="js/custom.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
