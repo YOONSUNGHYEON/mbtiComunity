@@ -1,46 +1,35 @@
-
 <?php
-require_once 'application/controller/UserController.php';
-require_once 'header.php';
-require_once 'appvars.php';
-require_once 'connectvars.php';
-require_once 'navmenu.php';
-
-$user = new UserController();
-if (! isset($_SESSION['user_id'])) {
-    if (isset($_POST['submit'])) {
-        $responses = $user->login($_POST['username'], $_POST['password']);
-    }
-}
+require_once ('include/header.php');
+require_once ('include/navmenu.php');
 
 ?>
-
 <div id="main-wrapper" class="content">
-	<h1>LOGIN</h1>
+	<h1 id="result">LOGIN</h1>
 	<div id="content-wrapper" class="">
-		<form method="post" action="<?= $_SERVER['PHP_SELF'] ?>">
+		<form method="post" action="loginProcess.php">
 			<fieldset>
 				<div class="form-group">
 					<label for="exampleInputEmail1" class="form-label mt-4"> UserName</label>
-					<input type="text" class="form-control"
+					<input type="text" class="form-control" id="username"
 						aria-describedby="usernameHelp" placeholder="Enter Username"
-						name="username"
-						value="<?= $user_username ?>" />
+						name="username" value="" />
 				</div>
 				<div class="form-group">
 					<label for="exampleInputPassword1" class="form-label mt-4">Password</label>
-					<input type="password" name="password" class="form-control"
-						placeholder="Password">
-
+					<input type="password" id="password" name="password"
+						class="form-control" placeholder="Password">
 				</div>
 				<a href="register.php" class="register-btn btn btn-primary">회원가입 하기</a>
 				<button type="submit" name="submit"
 					class="register-btn btn btn-primary">로그인 하기</button>
+
 			</fieldset>
 		</form>
 	</div>
 </div>
-<?php
-require_once ('footer.php');
-?>
+
+</body>
+<script type="text/javascript" async="" src="js/login.js"></script>
+</html>
+
 

@@ -47,7 +47,7 @@
       <?php
     // Generate the navigation menu
     echo '<hr />';
-    if (isset($_SESSION['user_id'])) {
+    if (isset($_SESSION['userId'])) {
         echo '<a href="logout.php">Log out</a> &#10084; ';
     } else {
         echo '<a href="login.php">Log In</a> &#10084; ';
