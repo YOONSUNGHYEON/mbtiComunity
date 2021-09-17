@@ -4316,7 +4316,7 @@ fieldset:disabled .btn {
   -ms-flex-align: center;
   align-items: center;
   -ms-flex-pack: justify;
-  justify-content: space-between;
+  justify-content: center;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
 }
@@ -4330,7 +4330,7 @@ fieldset:disabled .btn {
   -ms-flex-align: center;
   align-items: center;
   -ms-flex-pack: justify;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .navbar-brand {

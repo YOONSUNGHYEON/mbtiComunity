@@ -59,4 +59,27 @@ class BoardDAO {
         
     }
     
+    //BoardId에 해당되는 게시물 반환
+    public function findById($nBoardId) {
+        include 'include/pdoConnect.php';
+        $sql = $pdo->prepare("SELECT * FROM tBoardList WHERE nSeq = :nId");
+        $sql->bindValue(":nId", $nBoardId);
+        $sql -> execute();
+        $row = $sql -> fetch();
+        $pdo = null;
+        return $row;
+        
+    }
+    
+    //게시물 삭제
+    public function deleteById($nBoardId) {
+        include 'include/pdoConnect.php';
+        $sql = $pdo->prepare("DELETE FROM tBoardList WHERE nSeq = :nId");
+        $sql->bindValue(":nId", $nBoardId);
+        $sql -> execute();
+        $row = $sql -> fetch();
+        
+    }
+    
+    
 }

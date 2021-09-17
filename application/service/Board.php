@@ -44,12 +44,21 @@ class BoardService {
                 $boardId = $oBoardDAO->create($sTile, $sContent, $_SESSION['userId'], $nOptionId);
                 return $boardId;
             }
-            return ""
-            
-           
-        }
-       
-        
+            return "";               
+        }             
     }
     
+    //BoardId에 해당되는 게시물 반환
+    public function findById($nBoardId) {
+        $oBoardDAO = new BoardDAO();
+        $aBoard =  $oBoardDAO->findById($nBoardId);
+        return $aBoard;
+    }
+    
+    //게시물 삭제
+    public function deleteById($nBoardId) {
+        $oBoardDAO = new BoardDAO();
+        $oBoardDAO->deleteById($nBoardId);
+        
+    }
 }

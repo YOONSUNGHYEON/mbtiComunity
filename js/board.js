@@ -1,7 +1,7 @@
 window.onload = function() {
+	
 	getOptionNameByOptionId();
 	getListByOptionId();
-	//getMbtiList();
 }
 
 function getnBoardIdParam() {
@@ -14,13 +14,15 @@ function getOptionNameByOptionId() {
 	let nBoardId = getnBoardIdParam();
 	$.ajax({
 		type: 'GET',
-		url: "BoardController.php?method=findOptionNameByOptionId&id=" + nBoardId,
+		url: "BoardController.php?method=board&id=" + nBoardId,
 		dataType: "text",
 		success: function(mbtiName) {
 			$("#boardTitle").text(mbtiName);
 		}
 	});
 }
+
+
 
 function getListByOptionId() {
 	let nBoardId = getnBoardIdParam();
@@ -32,7 +34,7 @@ function getListByOptionId() {
 			let boardTable = "";
 			for (let i = 1; i < boardList.length; i++) {
 				boardTable += '<tr style="cursor:pointer;">';
-				boardTable += '<th class="content-th" scope="row"><div><a class="board-a" href="view.php?id='+boardList[i]['nSeq']+'">'+ boardList[i]['sTitle'] + '</a></div>';
+				boardTable += '<th class="content-th" scope="row"><div><a class="board-a" href="view.php?optionId='+nBoardId+'&id='+boardList[i]['nSeq']+'">'+ boardList[i]['sTitle'] + '</a></div>';
 				boardTable += '<td class="content-th">'+ boardList[i]['nMemberSeq'] + '</td>';
 				boardTable += '<td class="content-th">0</td>';
 				boardTable += '<td class="content-th">0</td>';
