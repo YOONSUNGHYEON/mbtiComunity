@@ -16,7 +16,13 @@ function sendBoardForm() {
             cache: false,
             data: boardForm, // data에 바로 serialze한 데이터를 넣는다.
             success: function(nBoardId){
-				location.href='view.php?optionId='+nOptionId+'&id='+nBoardId;
+				if(nBoardId==-1) {
+					alert("제목은  40자 이하로 작성해 주세요.");
+				}
+				else {
+					location.href='view.php?optionId='+nOptionId+'&id='+nBoardId;
+				}
+				
             },
             error: function (request, status, error){        
                 console.log(error)

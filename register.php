@@ -9,14 +9,15 @@ require_once ('include/navmenu.php');
 <div id="main-wrapper" class="content">
 	<h1>회원가입</h1>
 	<div id="content-wrapper" class="">
-		<form method="post" action= "registerProcess.php">
+		<form method="post" id="registerForm" enctype="multipart/form-data">
 			<fieldset>
 				<div class="form-group">
 					<label for="exampleInputEmail1" class="form-label mt-4">Username </label>
-					<input type="text" id="username" name="username" value="" class="form-control"
-						aria-describedby="emailHelp" placeholder="Enter id"> <small
-						id="emailHelp" class="form-text text-muted">We'll never share your
-						email with anyone else.</small>
+					<input type="text" id="username" name="username" value=""
+						class="form-control" aria-describedby="emailHelp"
+						placeholder="Enter id">
+					<small id="emailHelp" class="form-text text-muted">We'll never
+						share your username with anyone else.</small>
 
 				</div>
 				<div class="form-group">
@@ -26,9 +27,9 @@ require_once ('include/navmenu.php');
 
 				</div>
 				<div class="form-group">
-					<label for="exampleInputPassword2" class="form-label mt-4">Password (retype)</label>
-					<input type="password" id="password2" name="password2"
-						class="form-control" placeholder="Password">
+					<label for="exampleInputPassword2" class="form-label mt-4">Password
+						(retype)</label> <input type="password" id="password2"
+						name="password2" class="form-control" placeholder="Password">
 
 				</div>
 				<div class="form-group">
@@ -38,8 +39,8 @@ require_once ('include/navmenu.php');
 					</select>
 				</div>
 
-				<button type="submit" value="Sign Up" name="submit"
-					class="register-btn btn btn-primary">Submit</button>
+				<button type="submit" name="submit"
+					class="register-btn btn btn-primary" onClick="register();">Submit</button>
 			</fieldset>
 		</form>
 	</div>

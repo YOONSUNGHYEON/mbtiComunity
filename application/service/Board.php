@@ -1,5 +1,6 @@
 <?php 
 require_once 'application/DAO/Board.php';
+require_once 'application/DAO/Comment.php';
 session_start();
 class BoardService {
     //게시판 옵션 목록
@@ -38,6 +39,9 @@ class BoardService {
     
     //새 게시물 등록
     public function create($sTile, $sContent, $nOptionId) {
+        if(mb_strlen($sTile, "UTF-8")>40) {
+            return -1;
+        }
         if (isset($_SESSION['userId'])) {
             if(!empty($sTile)  &&  !empty($sContent)) {
                 $oBoardDAO = new BoardDAO();
@@ -47,7 +51,20 @@ class BoardService {
             return "";               
         }             
     }
-    
+    //게시물 수정
+    public function update($sTitle, $sContent, $nBoardId) {
+        if(mb_strlen($sTitle, "UTF-8")>40) {
+            return false;
+        }
+        if (isset($_SESSION['userId'])) {
+            if(!empty($sTitle)  &&  !empty($sContent)) {
+                $oBoardDAO = new BoardDAO();
+                $oBoardDAO->update($nBoardId, $sTitle, $sContent);
+                return true;
+            }
+            return false;
+        }
+    }
     //BoardId에 해당되는 게시물 반환
     public function findById($nBoardId) {
         $oBoardDAO = new BoardDAO();
@@ -58,7 +75,9 @@ class BoardService {
     //게시물 삭제
     public function deleteById($nBoardId) {
         $oBoardDAO = new BoardDAO();
+        $oCommentDAO = new CommentDAO();
+      
         $oBoardDAO->deleteById($nBoardId);
-        
+        $oCommentDAO->deleteByBoardId($nBoardId);
     }
 }

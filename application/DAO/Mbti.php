@@ -19,7 +19,7 @@ class MbtiDAO {
     //id에를 주면 mbti 이름 반환
     public function findNameById($nId) {
         include 'include/pdoConnect.php';
-        $sql = $pdo->prepare("SELECT sName FROM tMbtiOption WHERE nSeq = :nId");
+        $sql = $pdo->prepare("SELECT sName FROM tMbtiOption WHERE nMbtiSeq = :nId");
         $sql->bindValue(":nId", $nId);
         $sql->execute();
         $row = $sql ->fetchColumn();

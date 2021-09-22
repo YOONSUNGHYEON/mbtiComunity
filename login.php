@@ -6,7 +6,7 @@ require_once ('include/navmenu.php');
 <div id="main-wrapper" class="content">
 	<h1 id="result">LOGIN</h1>
 	<div id="content-wrapper" class="">
-		<form method="post" action="loginProcess.php">
+		<form method="post" enctype="multipart/form-data">
 			<fieldset>
 				<div class="form-group">
 					<label for="exampleInputEmail1" class="form-label mt-4"> UserName</label>
@@ -20,7 +20,7 @@ require_once ('include/navmenu.php');
 						class="form-control" placeholder="Password">
 				</div>
 				<a href="register.php" class="register-btn btn btn-primary">회원가입 하기</a>
-				<button type="submit" name="submit"
+				<button type="submit" name="submit" onClick="login();"
 					class="register-btn btn btn-primary">로그인 하기</button>
 
 			</fieldset>

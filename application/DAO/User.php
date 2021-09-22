@@ -4,9 +4,9 @@
 class UserDAO {
     
     //사용자 등록
-    public function create($sRegisterName, $sRegisterPassword, $sRegisterOption) {
+    public function register($sRegisterName, $sRegisterPassword, $sRegisterOption) {
         include 'include/pdoConnect.php';
-        $sql = $pdo->prepare("INSERT INTO tMemberList (sName, sPassword, dtJoinDate, nMbtiSeq ) VALUES (:sRegisterName, SHA(:sRegisterPassword), NOW(), :sRegisterOption)");
+        $sql = $pdo->prepare("INSERT INTO tMemberList (sID, sPassword, dtJoinDate, nMbtiSeq ) VALUES (:sRegisterName, SHA(:sRegisterPassword), NOW(), :sRegisterOption)");
         $sql->bindValue(":sRegisterName",$sRegisterName);
         $sql->bindValue(":sRegisterPassword", $sRegisterPassword);
         $sql->bindValue(":sRegisterOption",$sRegisterOption);
@@ -17,7 +17,7 @@ class UserDAO {
     //사용자 정보 리턴
     public function getUser($sUserName, $sUserPassword) {
         include 'include/pdoConnect.php';
-        $sql = $pdo->prepare("SELECT nSeq, sName FROM tMemberList WHERE sName = :sUserName AND sPassword = SHA(:sUserPassword)");
+        $sql = $pdo->prepare("SELECT nMemberSeq, sID FROM tMemberList WHERE sID = :sUserName AND sPassword = SHA(:sUserPassword)");
         $sql->bindValue(":sUserName",$sUserName);
         $sql->bindValue(":sUserPassword", $sUserPassword);
         
@@ -31,9 +31,9 @@ class UserDAO {
     }
     
     //사용자 정보 리턴
-    public function findUserByUserName($sUserName) {
+    public function findByUserName($sUserName) {
         include 'include/pdoConnect.php';
-        $sql = $pdo->prepare("SELECT * FROM tMemberList WHERE sName = :username");
+        $sql = $pdo->prepare("SELECT * FROM tMemberList WHERE sID = :username");
         $sql->bindValue(":username",$sUserName);
         $sql->execute();
         $result = array();

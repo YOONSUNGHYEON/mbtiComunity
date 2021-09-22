@@ -1,24 +1,29 @@
 <?php 
 require_once  'application/DAO/User.php';
-session_start();
+
 class UserService {
     
     public function register($sRegisterName, $sRegisterPassword, $sRegisterPassword2, $sRegisterOption) {
         $oUserDAO = new UserDAO();
-        $aUser =  $oUserDAO->findUserByUserName($sRegisterName);
+        $aUser = $oUserDAO->findByUserName($sRegisterName);
         if($sRegisterPassword != $sRegisterPassword2) {
             return "비밀번호가 같지 않습니다.";
         }
         else if(empty($sRegisterName) || empty($sRegisterPassword) || empty($sRegisterOption) ) {
             return "모든 데이터를 입력해주세요!";
         }
-        
+        else if(mb_strlen($sRegisterName, "UTF-8")>32) {
+            return "username 32자 이하로 작성해 주세요.";
+        }
+        else if(mb_strlen($sRegisterPassword, "UTF-8")>40) {
+            return "비밀번호 40자 이하로 작성해 주세요.";
+        }
         if ($aUser == NULL) {
-            $oUserDAO->create($sRegisterName, $sRegisterPassword, $sRegisterOption); 
+            $oUserDAO->register($sRegisterName, $sRegisterPassword, $sRegisterOption); 
             return null;
         }
         else {
-            $sErrorMessage =  "아이디가 중복됩니다.";
+            return "아이디가 중복됩니다.";
         }
     }
     
@@ -31,15 +36,18 @@ class UserService {
             return false;
         }
         else if ($aUser != NULL) {
-            $_SESSION['userId'] = $aUser['nSeq'];
-            $_SESSION['userName'] = $aUser['sName'];
-            setcookie('userId', $aUser['nSeq'], time() + (60 * 60 * 24 * 30)); // expires in 30 days
-            setcookie('userName', $aUser['sName'], time() + (60 * 60 * 24 * 30)); // expires in 30 days
+            $_SESSION['userId'] = $aUser['nMemberSeq'];
+            $_SESSION['userName'] = $aUser['sID'];
+            setcookie('userId', $aUser['nMemberSeq'], time() + (60 * 60 * 24 * 30)); // expires in 30 days
+            setcookie('userName', $aUser['sID'], time() + (60 * 60 * 24 * 30)); // expires in 30 days
             return true;
         }
         return false;
     } 
     
-    
+    public function findByUserName($sUserName) {
+        
+        return $result[0];
+    }
     
 }
