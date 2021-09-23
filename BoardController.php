@@ -2,15 +2,18 @@
 require_once 'application/Service/Board.php';
 require_once 'application/Service/Comment.php';
 require_once 'application/DAO/User.php';
+require_once 'application/Service/Recommend.php';
+require_once 'paging.php';
+
 $oBoardController = new BoardController();
 if ($_GET['method'] == 'findBoardOptionList') {
     echo $oBoardController->findOptionList();
 } else if ($_GET['method'] == 'getOptionNameByOptionId') {
     echo $oBoardController->getOptionNameByOptionId($_GET['id']);
-} else if ($_GET['method'] == 'findListByOptionId') {
-    echo $oBoardController->findListByOptionId($_GET['id']);
-} else if ($_GET['method'] == 'getListByBoardId') {
-    echo $oBoardController->getListByBoardId($_GET['id']);
+} else if ($_GET['method'] == 'board') {
+    echo $oBoardController->board();
+} else if ($_GET['method'] == 'getCommentListByBoardId') {
+    echo $oBoardController->getCommentListByBoardId($_GET['id']);
 } else if ($_GET['method'] == 'create') {
     echo $oBoardController->create($_POST['title'], $_POST['content'], $_GET['id']);
 } else if ($_GET['method'] == 'update') {
@@ -20,30 +23,47 @@ if ($_GET['method'] == 'findBoardOptionList') {
 } else if ($_GET['method'] == 'comment') {
     echo $oBoardController->comment($_GET['id'], $_POST['comment']);
 } else if ($_GET['method'] == 'delete') {
-    $oBoardController->deleteById($_GET['id']);
+    echo $oBoardController->deleteById($_GET['id']);
+}else if ($_GET['method'] == 'deleteByCommentId') {
+    $oBoardController->deleteByCommentId($_GET['id']);
 }
-
+else if ($_GET['method'] == 'getRecommentByUserIdAndBoardId') {
+    echo $oBoardController->getRecommentByUserIdAndBoardId();
+}
+else if ($_GET['method'] == 'recommend') {
+    echo $oBoardController->recommend();
+}
 class BoardController
 {
 
-    public function findListByOptionId($nOptionId)
+    public function board()
     {
         $oBoardService = new BoardService();
-        $aBoardList = $oBoardService->findListByOptionId($nOptionId);
-        $aBoardResult[] = array();
-        foreach ($aBoardList as $aBoard) {
-            array_push($aBoardResult, $aBoard);
+        $oCommentService = new CommentService();
+        $aPagingBoardData = $oBoardService->pagingBoard($_GET['id'], $_GET['page']);
+        if(isset($_SERVER['PHP_AUTH_USER'])) {
+            $aPagingBoardData['checkAdmin']=true;
         }
-        return json_encode($aBoardResult, JSON_PRETTY_PRINT);
+        else {
+            $aPagingBoardData['checkAdmin']=false;
+        }           
+        return json_encode($aPagingBoardData, JSON_PRETTY_PRINT);
     }
 
-    public function getListByBoardId($nBoardId)
+    public function getCommentListByBoardId($nBoardId)
     {
         $oCommentService = new CommentService();
         $aCommentList = $oCommentService->findListByBoardId($nBoardId);
         $aCommentResult[] = array();
         foreach ($aCommentList as $aComment) {
+            if($aComment['nMemberSeq']==$_SESSION['userId']) {
+                $aComment['checkUser']=true;
+            }
+            else {
+                $aComment['checkUser']=false;
+            }            
             array_push($aCommentResult, $aComment);
+            
         }
         return json_encode($aCommentResult, JSON_PRETTY_PRINT);
     }
@@ -124,10 +144,35 @@ class BoardController
         $outputData = json_encode($aBoard, JSON_UNESCAPED_UNICODE);     
         return $outputData;
     }
-
+    //게시물 삭제
     public function deleteById($nBoardId)
     {
         $oBoardService = new BoardService();
         $oBoardService->deleteById($nBoardId);
     }
+    //댓글 삭제
+    public function deleteByCommentId($nCommentId)
+    {
+        $CommentService = new CommentService();
+        $CommentService->deleteByCommentId($nCommentId);
+    }
+    
+    
+    /*-----------------좋아요 부분-----------------*/
+    public function getRecommentByUserIdAndBoardId()
+    {
+        $oRecommendService = new RecommendService();
+        $bRecommend = $oRecommendService->getByUserIdAndBoardId($_SESSION['userId'], $_GET['id']);
+        
+        return $bRecommend;
+    }
+    
+    public function recommend()
+    {
+        $oRecommendService = new RecommendService();
+        $bRecommend = $oRecommendService->recommend($_SESSION['userId'], $_GET['id']);
+        
+        return json_encode($bRecommend, JSON_PRETTY_PRINT);;
+    }
+    
 }

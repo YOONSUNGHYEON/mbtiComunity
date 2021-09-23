@@ -136,7 +136,9 @@ a[class*="btn"], button[class*="btn"] {
 	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 	text-decoration: none;
 }
-
+.comment-delete {
+	float:right;
+}
 img {
 	max-width: 100%;
 	max-height: 100%;

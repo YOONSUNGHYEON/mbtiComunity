@@ -12,6 +12,7 @@ class UserDAO {
         $sql->bindValue(":sRegisterOption",$sRegisterOption);
         $sql->execute();
         $pdo = null;
+        
     }
     
     //사용자 정보 리턴

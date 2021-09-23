@@ -1,23 +1,29 @@
 <?php 
-
+require_once ($_SERVER["DOCUMENT_ROOT"] . '/mbtiCommunity/include/pdoConnect.php');
 
 class CommentDAO {
+    
+    private $pdo;
+    
+    function __construct()
+    {
+        $oPdo = new pdoConnect();
+        $this->pdo = $oPdo->connectPdo();
+    }
+    
     //새 댓글 등록
     public function create($nUserId, $nBoardId, $sContent) {
-        include 'include/pdoConnect.php';
-        $sql = $pdo->prepare("INSERT INTO tCommentList (sContent, dtCreateDate, nMemberSeq, nBoardSeq )
+        $sql = $this->pdo->prepare("INSERT INTO tCommentList (sContent, dtCreateDate, nMemberSeq, nBoardSeq )
                       VALUES (:sContent, NOW(), :nUserId, :nBoardId)");
         $sql->bindValue(":sContent", $sContent);
         $sql->bindValue(":nUserId",$nUserId);
         $sql->bindValue(":nBoardId",$nBoardId);
         $sql->execute();
-        $pdo = null;
     }
     
     //BoardId에 적혀있는 모든 댓글 삭제
     public function deleteByBoardId($nBoardId) {
-        include 'include/pdoConnect.php';
-        $sql = $pdo->prepare("DELETE FROM tCommentList WHERE nBoardSeq = :nId");
+        $sql = $this->pdo->prepare("DELETE FROM tCommentList WHERE nBoardSeq = :nId");
         $sql->bindValue(":nId", $nBoardId);
         $sql -> execute();
         $row = $sql -> fetch();
@@ -26,8 +32,7 @@ class CommentDAO {
     
     // 댓글 삭제
     public function deleteByCommentId($nCommentId) {
-        include 'include/pdoConnect.php';
-        $sql = $pdo->prepare("DELETE FROM tCommentList WHERE nCommentSeq = :nId");
+        $sql = $this->pdo->prepare("DELETE FROM tCommentList WHERE nCommentSeq = :nId");
         $sql->bindValue(":nId", $nCommentId);
         $sql -> execute();
         $row = $sql -> fetch();
@@ -36,8 +41,7 @@ class CommentDAO {
     
     //board id에 해당하는 댓글 목록 
     public function findListByBoardId($nBoardId) {
-        include 'include/pdoConnect.php';
-        $sql = $pdo->prepare("SELECT * FROM tCommentList AS c 
+        $sql = $this->pdo->prepare("SELECT * FROM tCommentList AS c 
                                 INNER JOIN tMemberList as m ON c.nMemberSeq= m.nMemberSeq 
                                 WHERE nBoardSeq = :nBoardId ORDER BY nCommentSeq DESC ");
         $sql->bindValue(":nBoardId",$nBoardId);
@@ -46,7 +50,15 @@ class CommentDAO {
         while($row= $sql-> fetch(PDO::FETCH_ASSOC)) {
             $result[] = $row;
         }
-        $pdo = null;
         return $result;
+    }
+    
+    //게시물 댓글 수 리턴
+    public function getCountByBoardId($nBoardId) {
+        $sql = $this->pdo->prepare("SELECT count(*) FROM tCommentList where nBoardSeq=:nId");
+        $sql->bindValue(":nId", $nBoardId);
+        $sql -> execute();
+        $row = $sql -> fetch();
+        return $row['count(*)'];
     }
 }

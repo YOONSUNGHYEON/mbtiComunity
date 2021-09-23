@@ -25,4 +25,17 @@ class CommentService
             return "가져올 댓글 목록이 없습니다.";
         }
     }
+    
+    public function deleteByCommentId($nCommentId) {
+        $oCommentDAO = new CommentDAO();
+        $oCommentDAO->deleteByCommentId($nCommentId);      
+    }
+    
+    //게시물 댓글 수 리턴
+    public function getCountByBoardId($nBoardId) {
+        $oCommentDAO = new CommentDAO();
+        $nCommentCount = $oCommentDAO->getCountByBoardId($nBoardId);
+        return  $nCommentCount['count(*)'];
+        
+    }
 }

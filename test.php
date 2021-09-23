@@ -1,7 +1,20 @@
 <?php
 
 include 'include/pdoConnect.php';
-$sql = $pdo->prepare("DELETE FROM tCommentList WHERE nBoardSeq = :nId");
-$sql->bindValue(":nId", 2);
-$sql -> execute();
-$row = $sql -> fetch();
+
+try {
+    $pdo->beginTransaction();
+    $sql = $pdo->prepare("UPDATE tRecommendList SET nCheck = :nCheck WHERE nRecommendSeq = :nRecommendSeq");
+    $sql->bindValue(":nCheck", 1);
+    $sql->bindValue(":nRecommendSeq", 1);
+    $sql->execute();
+    $pdo->commit();
+    $pdo = null;
+    return true;
+} catch (Exception $e) {
+    if ($pdo->inTransaction()) {
+        $pdo->rollback();
+    }
+    throw $e;
+    return false;
+}

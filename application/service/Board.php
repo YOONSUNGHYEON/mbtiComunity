@@ -37,15 +37,35 @@ class BoardService {
         
     }
     
+    //board 로드 시 필요한 데이터
+    public function pagingBoard($nOptionId, $nCurrentPage) {
+        $oBoardDAO = new BoardDAO();
+        $oCommentDAO = new CommentDAO();
+        $aBoardListTotalLength=count($oBoardDAO->findListByOptionId($nOptionId));
+        $aPageData = paging($aBoardListTotalLength, $nCurrentPage);
+        $aBoardList =  $oBoardDAO->findListByOptionIdlLimit($nOptionId, $aPageData['startCount'], $aPageData['blockCount']);
+        $aBoardResult[] = array();
+        
+        foreach ($aBoardList as $aBoard) {
+            $aBoard['nCommentCount'] = $oCommentDAO->getCountByBoardId($aBoard['nBoardSeq']);
+            array_push($aBoardResult, $aBoard);
+        }
+        $aBoardResult['totalCount']=$aBoardListTotalLength;
+        $aBoardResult['currentCount']=count($aBoardList);
+        $aBoardResult['pageData']=$aPageData;
+        return $aBoardResult;
+        
+    }
+    
     //새 게시물 등록
-    public function create($sTile, $sContent, $nOptionId) {
-        if(mb_strlen($sTile, "UTF-8")>40) {
+    public function create($sTitle, $sContent, $nOptionId) {
+        if(mb_strlen($sTitle, "UTF-8")>40) {
             return -1;
         }
         if (isset($_SESSION['userId'])) {
-            if(!empty($sTile)  &&  !empty($sContent)) {
+            if(!empty($sTitle)  &&  !empty($sContent)) {
                 $oBoardDAO = new BoardDAO();
-                $boardId = $oBoardDAO->create($sTile, $sContent, $_SESSION['userId'], $nOptionId);
+                $boardId = $oBoardDAO->create($sTitle, $sContent, $_SESSION['userId'], $nOptionId);
                 return $boardId;
             }
             return "";               
@@ -77,7 +97,9 @@ class BoardService {
         $oBoardDAO = new BoardDAO();
         $oCommentDAO = new CommentDAO();
       
-        $oBoardDAO->deleteById($nBoardId);
-        $oCommentDAO->deleteByBoardId($nBoardId);
+        if($oBoardDAO->deleteById($nBoardId)) {
+            $oCommentDAO->deleteByBoardId($nBoardId);
+        }
+        
     }
 }

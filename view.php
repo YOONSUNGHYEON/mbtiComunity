@@ -33,7 +33,7 @@ require_once ('include/navmenu.php');
 			</div>
 			<div class="btn_group">
 				<button onclick="clickLike();" class="btn-like">
-					<img class="btn-img" src="image/heart.png" alt="">좋아요
+					<img class="btn-img btn-like" src="image/heart.png" alt="">좋아요
 				</button>
 				<button  onclick="goLastPage();" class="btn-default">목록</button>
 				<button id="edit" onclick="editBoard();" class="btn-submit">수정</button>

@@ -21,9 +21,8 @@ function register() {
             type: "POST",
             data: registerForm, // data에 바로 serialze한 데이터를 넣는다.
             success: function(result){
-				console(result);
-				if(result!=null) {
-					alert(result);
+				if(result!="") {
+					alert(result!=null);
 				}
 				else {
 					alert('회원가입 성공!');
