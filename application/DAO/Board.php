@@ -1,5 +1,5 @@
 <?php
-require_once ($_SERVER["DOCUMENT_ROOT"] . '/mbtiCommunity/include/pdoConnect.php');
+require_once ($_SERVER["DOCUMENT_ROOT"] . '/MbtiCommunity/include/pdoConnect.php');
 
 class BoardDAO
 {
@@ -36,7 +36,6 @@ class BoardDAO
         while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
             $result[] = $row;
         }
-
         return $result;
     }
 
@@ -53,7 +52,6 @@ class BoardDAO
         while ($row = $sql->fetch(PDO::FETCH_ASSOC)) {
             $result[] = $row;
         }
-
         return $result;
     }
 
@@ -70,7 +68,7 @@ class BoardDAO
     // 새 게시물 등록
     public function create($sTitle, $sContent, $nUserId, $nOptionId)
     {
-        $sql =  $this->pdo>prepare("INSERT INTO tBoardList (sTitle, sContent, dtCreateDate, nMemberSeq, nBoardOptionSeq ) 
+        $sql =  $this->pdo->prepare("INSERT INTO tBoardList (sTitle, sContent, dtCreateDate, nMemberSeq, nBoardOptionSeq ) 
                       VALUES (:sTitle, :sContent, NOW(), :nUserId, :nOptionId)");
         $sql->bindValue(":sTitle", $sTitle);
         $sql->bindValue(":sContent", $sContent);
@@ -78,7 +76,6 @@ class BoardDAO
         $sql->bindValue(":nOptionId", $nOptionId);
         $sql->execute();
         $boardId =  $this->pdo->lastInsertId();
-        $this->pdo = null;
         return $boardId;
     }
 
@@ -93,7 +90,20 @@ class BoardDAO
         $row = $sql->fetch();
         return $row;
     }
-
+    public function findWriterById($nBoardId) {
+        $sQuery = ' SELECT
+                        nMemberSeq
+                    FROM
+                        tBoardList 
+                    WHERE
+                        nBoardSeq = :nId ';
+        $oPrepare = $this->pdo->prepare($sQuery);
+        $oPrepare->bindValue(":nId", $nBoardId);
+        $oPrepare->execute();
+        $nMemberSeq = $oPrepare->fetch();
+        return $nMemberSeq;
+        
+    }
     // BoardId에 해당되는 게시물 반환 (최신순 정렬)
     public function findByIdTemp($nBoardId, $sParam)
     {

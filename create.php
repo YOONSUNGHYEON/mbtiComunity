@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 require_once ('include/header.php');
 require_once ('include/navmenu.php');
 ?>
@@ -25,5 +25,5 @@ require_once ('include/navmenu.php');
 </div>
 </div>
 </body>
-<script type="text/javascript" async="" src="js/create.js"></script>
+
 </html>

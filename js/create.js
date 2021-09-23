@@ -1,10 +1,26 @@
 window.onload = function() {
-
+	checkWritePermission();
 }
 function getnBoardOptionIdParam() {
 	let params = new URLSearchParams(location.search);
 	let nOptionId = params.get('id');
 	return nOptionId;
+}
+//create 페이지 들어가자마자 글쓰기 권한이 있는지 확인
+function checkWritePermission(){
+	let nBoardOptionId = getnBoardOptionIdParam();
+	$.ajax({
+		type: 'GET',
+		url: "BoardController.php?method=checkWritePermission&id=" + nBoardOptionId,
+		dataType: "text",
+		success: function(sResult) {
+			if(sResult!="") {			
+				location.href = "./board.php?id=" + nBoardOptionId;
+				alert(sResult);
+			}
+			
+		}
+	});
 }
 
 function sendBoardForm() {

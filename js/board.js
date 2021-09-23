@@ -14,18 +14,18 @@ function getParam(sMethod) {
 	}
 }
 
-
 function getBoardOptionIdParam() {
 	let params = new URLSearchParams(location.search);
 	let BoardOptionId = params.get('id');
+	
 	return BoardOptionId;
 }
 function clickCreateBtn() {
-	let nBoardOptionId = getBoardOptionIdParam();
+	let nBoardOptionId = getParam('optionId');
 	location.href = "./create.php?id=" + nBoardOptionId;
 }
 function getOptionNameByOptionId() {
-	let nBoardOptionId = getBoardOptionIdParam();
+	let nBoardOptionId = getParam('optionId');
 	$.ajax({
 		type: 'GET',
 		url: "BoardController.php?method=getOptionNameByOptionId&id=" + nBoardOptionId,
@@ -49,7 +49,7 @@ function deleteBoard(nBoardId, page) {
 
 //게시판 목록 가져오기
 function getListByOptionId(page) {
-	let nBoardOptionId = getBoardOptionIdParam();
+	let nBoardOptionId = getParam('optionId');
 	$.ajax({
 		type: 'GET',
 		url: "BoardController.php?method=board&id=" + nBoardOptionId + "&page=" + page,

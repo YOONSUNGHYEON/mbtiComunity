@@ -24,6 +24,18 @@ class BoardService {
             return "가져올 게시판 글 목록이 없습니다.";
         }
     }
+    //BoardId를 주면 게시판 작성자
+    public function findWriterById($nBoardId) {
+        $oBoardDAO = new BoardDAO();
+        $sBoardWriter = $oBoardDAO->findWriterById($nBoardId);
+        if ($sBoardWriter != NULL) {
+            return $sBoardWriter;
+        } else {
+            return "가져올 작성자 없습니다.";
+        }
+        
+    }
+    
     
     //id에를 주면 게시판 이름 반환
     public function findOptionNameByOptionId($nOptionId) {

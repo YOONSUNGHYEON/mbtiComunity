@@ -1,9 +1,10 @@
 <?php
-require_once 'application/Service/Board.php';
-require_once 'application/Service/Comment.php';
-require_once 'application/DAO/User.php';
-require_once 'application/Service/Recommend.php';
-require_once 'paging.php';
+require_once ('application/Service/Board.php');
+require_once ('application/Service/Comment.php');
+require_once ('application/DAO/User.php');
+require_once ('application/service/User.php');
+require_once ('application/Service/Recommend.php');
+require_once ('paging.php');
 
 $oBoardController = new BoardController();
 if ($_GET['method'] == 'findBoardOptionList') {
@@ -23,7 +24,7 @@ if ($_GET['method'] == 'findBoardOptionList') {
 } else if ($_GET['method'] == 'comment') {
     echo $oBoardController->comment($_GET['id'], $_POST['comment']);
 } else if ($_GET['method'] == 'delete') {
-    echo $oBoardController->deleteById($_GET['id']);
+    echo $oBoardController->deleteById();
 }else if ($_GET['method'] == 'deleteByCommentId') {
     $oBoardController->deleteByCommentId($_GET['id']);
 }
@@ -32,6 +33,9 @@ else if ($_GET['method'] == 'getRecommentByUserIdAndBoardId') {
 }
 else if ($_GET['method'] == 'recommend') {
     echo $oBoardController->recommend();
+}
+else if ($_GET['method'] == 'checkWritePermission') {
+    echo $oBoardController->checkWritePermission();
 }
 class BoardController
 {
@@ -119,14 +123,14 @@ class BoardController
     }
 
     // create페이지 get방식
-    public function getCreate($nBoardOption)
+    public function checkWritePermission()
     {
         $oUserDAO = new UserDAO();
         if (! isset($_SESSION['userId'])) {
             return "로그인부터 해주세요.";
         }
         $aUser = $oUserDAO->findByUserName($_SESSION['userName']);
-        if ($aUser['nMbtiSeq'] != $nBoardOption) {
+        if ($aUser['nMbtiSeq'] != $_GET['id']) {
             return "자신의 mbti 게시판을 이용해주세요.";
         }
         return null;
@@ -136,9 +140,15 @@ class BoardController
     {
         $oBoardService = new BoardService();
         $aBoard = $oBoardService->findById($nBoardId);
-        if ($_SESSION['userName'] == $aBoard['sID']) {
-            $aBoard['checkUser'] = true;
-        } else {
+        if(isset($_SESSION['userName'])) {
+            if ($_SESSION['userName'] == $aBoard['sID']) {
+                $aBoard['checkUser'] = true;
+            }
+            else {
+                $aBoard['checkUser'] = false;
+            }
+        }
+        else {
             $aBoard['checkUser'] = false;
         }
         $outputData = json_encode($aBoard, JSON_UNESCAPED_UNICODE);     
@@ -148,7 +158,15 @@ class BoardController
     public function deleteById($nBoardId)
     {
         $oBoardService = new BoardService();
-        $oBoardService->deleteById($nBoardId);
+        if(isset($_SESSION['userId'])){
+            if($oBoardService->findWriterById($nBoardId)==$_SESSION['userId']) {
+                $oBoardService = new BoardService();
+                $oBoardService->deleteById($nBoardId);
+                return true;
+            }          
+        }
+        return false;
+       
     }
     //댓글 삭제
     public function deleteByCommentId($nCommentId)
@@ -172,7 +190,7 @@ class BoardController
         $oRecommendService = new RecommendService();
         $bRecommend = $oRecommendService->recommend($_SESSION['userId'], $_GET['id']);
         
-        return json_encode($bRecommend, JSON_PRETTY_PRINT);;
+        return $bRecommend;
     }
     
 }

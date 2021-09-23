@@ -139,14 +139,13 @@ function getCommentListByBoardId() {
 //////////////////////////////////
 
 //좋아요 값 가져오기
-function getRecommentByUserIdAndBoardId() {
+function getRecommentByUserIdAndBoardId(){
 	const nBoardId = getParam("id");
 	$.ajax({
 		type: 'GET',
 		url: "BoardController.php?method=getRecommentByUserIdAndBoardId&id=" + nBoardId,
 		dataType: "json",
 		success: function(recommend) {
-			console.log(recommend);
 			if(recommend==true) {
 				$(".btn-like").attr("src", "image/fullHeart.png");
 			}
@@ -166,7 +165,6 @@ function clickLike() {
 		url: "BoardController.php?method=recommend&id=" + nBoardId,
 		dataType: "text",
 		success: function(recommend) {
-			console.log(recommend);
 			if(recommend==true) {
 				$(".btn-like").attr("src", "image/fullHeart.png");
 			}

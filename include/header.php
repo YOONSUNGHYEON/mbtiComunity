@@ -14,6 +14,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 <script type="text/javascript" async="" src="js/event-handler.js"></script>
 <script type="text/javascript" async="" src="js/nav.js"></script>
+<script type="text/javascript" async="" src="js/create.js"></script>
 </head>
 <body>
 

@@ -1,5 +1,5 @@
 <?php 
-require_once 'application/DAO/Recommend.php';
+require_once ('application/DAO/Recommend.php');
 
 
 class RecommendService {
@@ -22,15 +22,15 @@ class RecommendService {
         $aRecommend = $oRecommendDAO->getByUserIdAndBoardId($nUserId, $nBoardId);
         if($aRecommend==null) {
             $oRecommendDAO->create($nUserId, $nBoardId);
-            return $aRecommend['nRecommendSeq'];
+            return true;
         }
         if($aRecommend['nCheck']==0) {
-            $oRecommendDAO->update(1, $aRecommend['$nRecommendSeq']);
-            return $aRecommend['nRecommendSeq'];
+            $oRecommendDAO->update(1, $aRecommend['nRecommendSeq']);
+            return true;
         }
         else {
-            $oRecommendDAO->update(0, $aRecommend['$nRecommendSeq']);
-            return $aRecommend['nRecommendSeq'];
+            $oRecommendDAO->update(0, $aRecommend['nRecommendSeq']);
+            return false;
         }
        
                

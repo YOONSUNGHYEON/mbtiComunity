@@ -6,7 +6,7 @@ window.onload = function() {
 function getMbtiList() {
 	$.ajax({
 		type: 'GET',
-		url: "mbtiListJson.php",
+		url: "MbtiController.php?method=getMbtiList",
 		dataType: "json",
 		success: function(data) {
 

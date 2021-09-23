@@ -21,6 +21,10 @@ class pdoConnect
             die('연결 실패: ' . $e->getMessage());
         }
     }
+    function __destruct()
+    {
+        
+    }
 }
 
 
