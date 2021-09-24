@@ -53,7 +53,13 @@ function deleteBoard() {
 	$.ajax({
 		type: 'DELETE',
 		url: "BoardController.php?method=delete&id=" + nBoardId,
-		success: function(board) {
+		success: function(deleteResult) {
+			if(deleteResult==true) {
+				alert("삭제 성공했습니다.");
+			}
+			else {
+				alert(deleteResult);
+			}
 			goLastPage();
 		}
 	});
@@ -100,7 +106,6 @@ function deleteComment(commentId) {
 		type: 'DELETE',
 		url: "BoardController.php?method=deleteByCommentId&id=" + commentId,
 		success: function(result) {
-			console.log(result);
 			getCommentListByBoardId();
 		}
 	});

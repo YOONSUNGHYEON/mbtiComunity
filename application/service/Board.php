@@ -1,117 +1,111 @@
-<?php 
-require_once 'application/DAO/Board.php';
-require_once 'application/DAO/Comment.php';
-session_start();
-class BoardService {
-    //게시판 옵션 목록
-    public function findBoardOptionList() {
-        $oBoardDAO = new BoardDAO();
-        $aBoardOption = $oBoardDAO->findBoardOptionList(); 
+<?php
+require_once ($_SERVER["DOCUMENT_ROOT"] . '/mbtiCommunity/application/DAO/Board.php');
+require_once ($_SERVER["DOCUMENT_ROOT"] . '/mbtiCommunity/application/DAO/Comment.php');
+require_once ($_SERVER["DOCUMENT_ROOT"] . '/mbtiCommunity/paging.php');
+
+class BoardService
+{
+
+    private $oBoardDAO;
+
+    private $oCommentDAO;
+
+    private $oRecommendDAO;
+
+    function __construct()
+    {
+        $this->oBoardDAO = new BoardDAO();
+        $this->oCommentDAO = new CommentDAO();
+        $this->oRecommendDAO = new RecommendDAO();
+    }
+
+    // 게시판 옵션 목록
+    public function findBoardOptionList()
+    {
+        $aBoardOption = $this->oBoardDAO->findBoardOptionList();
         if ($aBoardOption != NULL) {
             return $aBoardOption;
         } else {
             return "가져올 게시판 옵션 목록이 없습니다.";
         }
     }
-    
-    //게시판 옵션 아이디에 따른 게시판 목록
-    public function findListByOptionId($sOptionId) {
-        $oBoardDAO = new BoardDAO();
-        $aBoard= $oBoardDAO->findListByOptionId($sOptionId);
+
+    // 게시판 옵션 아이디에 따른 게시판 목록
+    public function findListByOptionId($sOptionId)
+    {
+        $aBoard = $this->oBoardDAO->findListByOptionId($sOptionId);
         if ($aBoard != NULL) {
             return $aBoard;
         } else {
             return "가져올 게시판 글 목록이 없습니다.";
         }
     }
-    //BoardId를 주면 게시판 작성자
-    public function findWriterById($nBoardId) {
-        $oBoardDAO = new BoardDAO();
-        $sBoardWriter = $oBoardDAO->findWriterById($nBoardId);
-        if ($sBoardWriter != NULL) {
-            return $sBoardWriter;
+
+    // BoardId를 주면 게시판 작성자 id반환
+    public function findWriterById($nBoardId)
+    {
+        $nBoardWriterId = $this->oBoardDAO->findWriterById($nBoardId);
+        if ($nBoardWriterId != NULL) {
+            return $nBoardWriterId;
         } else {
             return "가져올 작성자 없습니다.";
         }
-        
     }
-    
-    
-    //id에를 주면 게시판 이름 반환
-    public function findOptionNameByOptionId($nOptionId) {
-        $oBoardDAO = new BoardDAO();
-        $sBoardName = $oBoardDAO->findOptionNameByOptionId($nOptionId);
+
+    // id에를 주면 게시판 이름 반환
+    public function findOptionNameByOptionId($nOptionId)
+    {
+        $sBoardName = $this->oBoardDAO->findOptionNameByOptionId($nOptionId);
         if ($sBoardName != NULL) {
             return $sBoardName;
         } else {
             return "가져올 게시판 이름이 없습니다.";
         }
-        
     }
-    
-    //board 로드 시 필요한 데이터
-    public function pagingBoard($nOptionId, $nCurrentPage) {
-        $oBoardDAO = new BoardDAO();
-        $oCommentDAO = new CommentDAO();
-        $aBoardListTotalLength=count($oBoardDAO->findListByOptionId($nOptionId));
+
+    // board 로드 시 필요한 데이터
+    public function pagingBoard($nOptionId, $nCurrentPage)
+    {
+        $aBoardListTotalLength = count($this->oBoardDAO->findListByOptionId($nOptionId));
         $aPageData = paging($aBoardListTotalLength, $nCurrentPage);
-        $aBoardList =  $oBoardDAO->findListByOptionIdlLimit($nOptionId, $aPageData['startCount'], $aPageData['blockCount']);
+        $aBoardList = $this->oBoardDAO->findListByOptionIdlLimit($nOptionId, $aPageData['nStartCount'], $aPageData['nBlockCount']);
         $aBoardResult[] = array();
-        
+
         foreach ($aBoardList as $aBoard) {
-            $aBoard['nCommentCount'] = $oCommentDAO->getCountByBoardId($aBoard['nBoardSeq']);
+            $aBoard['nCommentCount'] = $this->oCommentDAO->getCountByBoardId($aBoard['nBoardSeq']);
+            $aBoard['nHit'] = $this->oRecommendDAO->getCountByBoardId($aBoard['nBoardSeq']);
             array_push($aBoardResult, $aBoard);
         }
-        $aBoardResult['totalCount']=$aBoardListTotalLength;
-        $aBoardResult['currentCount']=count($aBoardList);
-        $aBoardResult['pageData']=$aPageData;
+        $aBoardResult['nTotalCount'] = $aBoardListTotalLength;
+        $aBoardResult['nCurrentCount'] = count($aBoardList);
+        $aBoardResult['pageData'] = $aPageData;
         return $aBoardResult;
-        
     }
-    
-    //새 게시물 등록
-    public function create($sTitle, $sContent, $nOptionId) {
-        if(mb_strlen($sTitle, "UTF-8")>40) {
-            return -1;
-        }
-        if (isset($_SESSION['userId'])) {
-            if(!empty($sTitle)  &&  !empty($sContent)) {
-                $oBoardDAO = new BoardDAO();
-                $boardId = $oBoardDAO->create($sTitle, $sContent, $_SESSION['userId'], $nOptionId);
-                return $boardId;
-            }
-            return "";               
-        }             
+
+    // 새 게시물 등록
+    public function create($sTitle, $sContent, $nOptionId)
+    {
+        $boardId = $this->oBoardDAO->create($sTitle, $sContent, $_SESSION['userId'], $nOptionId);
+        return $boardId;
     }
-    //게시물 수정
-    public function update($sTitle, $sContent, $nBoardId) {
-        if(mb_strlen($sTitle, "UTF-8")>40) {
-            return false;
-        }
-        if (isset($_SESSION['userId'])) {
-            if(!empty($sTitle)  &&  !empty($sContent)) {
-                $oBoardDAO = new BoardDAO();
-                $oBoardDAO->update($nBoardId, $sTitle, $sContent);
-                return true;
-            }
-            return false;
-        }
+
+    // 게시물 수정
+    public function update($sTitle, $sContent, $nBoardId)
+    {
+        $this->oBoardDAO->update($nBoardId, $sTitle, $sContent);
+        return true;
     }
-    //BoardId에 해당되는 게시물 반환
-    public function findById($nBoardId) {
-        $oBoardDAO = new BoardDAO();
-        $aBoard =  $oBoardDAO->findById($nBoardId);
+
+    // BoardId에 해당되는 게시물 반환
+    public function findById($nBoardId)
+    {
+        $aBoard = $this->oBoardDAO->findById($nBoardId);
         return $aBoard;
     }
-    
-    //게시물 삭제
-    public function deleteById($nBoardId) {
-        $oBoardDAO = new BoardDAO();
-        $oCommentDAO = new CommentDAO();
-      
-        if($oBoardDAO->deleteById($nBoardId)) {
-            $oCommentDAO->deleteByBoardId($nBoardId);
-        }
-        
+
+    // 게시물 삭제
+    public function deleteById($nBoardId)
+    {
+        return $this->oBoardDAO->deleteById($nBoardId);
     }
 }

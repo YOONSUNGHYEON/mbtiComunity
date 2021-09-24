@@ -2,13 +2,13 @@ window.onload = function() {
 	checkWritePermission();
 }
 function getnBoardOptionIdParam() {
-	let params = new URLSearchParams(location.search);
-	let nOptionId = params.get('id');
+	const params = new URLSearchParams(location.search);
+	const nOptionId = params.get('id');
 	return nOptionId;
 }
 //create 페이지 들어가자마자 글쓰기 권한이 있는지 확인
 function checkWritePermission(){
-	let nBoardOptionId = getnBoardOptionIdParam();
+	const nBoardOptionId = getnBoardOptionIdParam();
 	$.ajax({
 		type: 'GET',
 		url: "BoardController.php?method=checkWritePermission&id=" + nBoardOptionId,
@@ -23,6 +23,11 @@ function checkWritePermission(){
 	});
 }
 
+function goLastPage() {
+	const nOptionId =getnBoardOptionIdParam();
+	location.href = './board.php?id=' + nOptionId;
+}
+
 function sendBoardForm() {
 	const nOptionId = getnBoardOptionIdParam();
 	const boardForm = $('#boardForm').serialize();
@@ -31,12 +36,12 @@ function sendBoardForm() {
             type: "POST",
             cache: false,
             data: boardForm, // data에 바로 serialze한 데이터를 넣는다.
-            success: function(nBoardId){
-				if(nBoardId==-1) {
-					alert("제목은  40자 이하로 작성해 주세요.");
+            success: function(result){
+				if(result>0) {
+					location.href='view.php?optionId='+nOptionId+'&id='+result;					
 				}
 				else {
-					location.href='view.php?optionId='+nOptionId+'&id='+nBoardId;
+					alert(result);
 				}
 				
             },

@@ -4,78 +4,86 @@ require_once ('application/Service/Comment.php');
 require_once ('application/DAO/User.php');
 require_once ('application/service/User.php');
 require_once ('application/Service/Recommend.php');
-require_once ('paging.php');
+session_start();
 
 $oBoardController = new BoardController();
 if ($_GET['method'] == 'findBoardOptionList') {
     echo $oBoardController->findOptionList();
 } else if ($_GET['method'] == 'getOptionNameByOptionId') {
-    echo $oBoardController->getOptionNameByOptionId($_GET['id']);
+    echo $oBoardController->getOptionNameByOptionId();
 } else if ($_GET['method'] == 'board') {
     echo $oBoardController->board();
 } else if ($_GET['method'] == 'getCommentListByBoardId') {
-    echo $oBoardController->getCommentListByBoardId($_GET['id']);
+    echo $oBoardController->getCommentListByBoardId();
 } else if ($_GET['method'] == 'create') {
-    echo $oBoardController->create($_POST['title'], $_POST['content'], $_GET['id']);
+    echo $oBoardController->create();
 } else if ($_GET['method'] == 'update') {
-    echo $oBoardController->update($_POST['title'], $_POST['content'], $_GET['id']);
+    echo $oBoardController->update();
 } else if ($_GET['method'] == 'getBoardById') {
-    echo $oBoardController->getBoardById($_GET['id']);
+    echo $oBoardController->getBoardById();
 } else if ($_GET['method'] == 'comment') {
-    echo $oBoardController->comment($_GET['id'], $_POST['comment']);
+    echo $oBoardController->comment();
 } else if ($_GET['method'] == 'delete') {
     echo $oBoardController->deleteById();
-}else if ($_GET['method'] == 'deleteByCommentId') {
-    $oBoardController->deleteByCommentId($_GET['id']);
-}
-else if ($_GET['method'] == 'getRecommentByUserIdAndBoardId') {
+} else if ($_GET['method'] == 'deleteByCommentId') {
+    $oBoardController->deleteByCommentId();
+} else if ($_GET['method'] == 'getRecommentByUserIdAndBoardId') {
     echo $oBoardController->getRecommentByUserIdAndBoardId();
-}
-else if ($_GET['method'] == 'recommend') {
+} else if ($_GET['method'] == 'recommend') {
     echo $oBoardController->recommend();
-}
-else if ($_GET['method'] == 'checkWritePermission') {
+} else if ($_GET['method'] == 'checkWritePermission') {
     echo $oBoardController->checkWritePermission();
 }
+
 class BoardController
 {
 
+    private $oBoardService;
+
+    private $oCommentService;
+
+    private $oRecommendService;
+
+    private $oUserService;
+
+    function __construct()
+    {
+        $this->oBoardService = new BoardService();
+        $this->oCommentService = new CommentService();
+        $this->oRecommendService = new RecommendService();
+        $this->oUserService = new UserService();
+    }
+
     public function board()
     {
-        $oBoardService = new BoardService();
-        $oCommentService = new CommentService();
-        $aPagingBoardData = $oBoardService->pagingBoard($_GET['id'], $_GET['page']);
-        if(isset($_SERVER['PHP_AUTH_USER'])) {
-            $aPagingBoardData['checkAdmin']=true;
+        $aPagingBoardData = $this->oBoardService->pagingBoard($_GET['id'], $_GET['page']);
+        if (isset($_SESSION['adminId'])) {
+            $aPagingBoardData['nCheckAdmin'] = true;
+        } else {
+            $aPagingBoardData['nCheckAdmin'] = false;
         }
-        else {
-            $aPagingBoardData['checkAdmin']=false;
-        }           
         return json_encode($aPagingBoardData, JSON_PRETTY_PRINT);
     }
 
-    public function getCommentListByBoardId($nBoardId)
+    public function getCommentListByBoardId()
     {
-        $oCommentService = new CommentService();
-        $aCommentList = $oCommentService->findListByBoardId($nBoardId);
+        $nBoardId = $_GET['id'];
+        $aCommentList = $this->oCommentService->findListByBoardId($nBoardId);
         $aCommentResult[] = array();
         foreach ($aCommentList as $aComment) {
-            if($aComment['nMemberSeq']==$_SESSION['userId']) {
-                $aComment['checkUser']=true;
+            if ($aComment['nMemberSeq'] == $_SESSION['userId']) {
+                $aComment['checkUser'] = true;
+            } else {
+                $aComment['checkUser'] = false;
             }
-            else {
-                $aComment['checkUser']=false;
-            }            
             array_push($aCommentResult, $aComment);
-            
         }
         return json_encode($aCommentResult, JSON_PRETTY_PRINT);
     }
 
     public function findOptionList()
     {
-        $oMbtiService = new MbtiService();
-        $aMbtiOtionList = $oMbtiService->findMbtiList();
+        $aMbtiOtionList = $this->oMbtiService->findMbtiList();
         $mbtiData[] = array();
         foreach ($aMbtiOtionList as $aMbtiOtion) {
             array_push($mbtiData, $aMbtiOtion);
@@ -85,112 +93,131 @@ class BoardController
         return $outputData;
     }
 
-    public function getOptionNameByOptionId($nOptionId)
+    public function getOptionNameByOptionId()
     {
-        $oBoardService = new BoardService();
-        $sBoardName = $oBoardService->findOptionNameByOptionId($nOptionId);
+        $nOptionId = $_GET['id'];
+        $sBoardName = $this->oBoardService->findOptionNameByOptionId($nOptionId);
         return $sBoardName;
     }
 
-    public function comment($nBoardId, $sContent)
+    public function comment()
     {
-        $oCommentService = new CommentService();
+        $nBoardId = $_GET['id'];
+        $sContent = $_POST['comment'];
         if (! isset($_SESSION['userId'])) {
             return "로그인을 해주세요.";
         }
-        $bResult = $oCommentService->create($_SESSION['userId'], $nBoardId, $sContent);
+        $bResult = $this->oCommentService->create($_SESSION['userId'], $nBoardId, $sContent);
         if ($bResult == true) {
             return true;
         }
         return "댓글을 입력해주세요.";
     }
 
-    public function create($sTitle, $sContent, $nOptionId)
+    public function create()
     {
-        $oBoardService = new BoardService();
-        $nBoardId = $oBoardService->create($sTitle, $sContent, $nOptionId);
+        $sTitle = $_POST['title'];
+        $sContent = $_POST['content'];
+        $nOptionId = $_GET['id'];
+        if(empty($sTitle) || empty($sContent) || empty($nOptionId) ) {
+            return "빈칸을 채워주세요.";
+        }  
+        else if(mb_strlen($sTitle, "UTF-8") > 40){
+            return "제목은  40자 이하로 작성해 주세요.";
+        }
+        $nBoardId = $this->oBoardService->create($sTitle, $sContent, $nOptionId);
         return $nBoardId;
+       
     }
 
-    public function update($sTitle, $sContent, $nBoardId)
+    public function update()
     {
-        // $oUserDAO = new UserDAO();
-        // $aUser = $oUserDAO->findByUserName($_SESSION['userName']);
-        // if($_SESSION['userId'])
-        $oBoardService = new BoardService();
-        $bCheck = $oBoardService->update($sTitle, $sContent, $nBoardId);
+        $sTitle = $_POST['title'];
+        $sContent = $_POST['content'];
+        $nBoardId = $_GET['id'];
+        if(empty($sTitle) || empty($sContent) || empty($nOptionId) ) {
+            return "빈칸을 채워주세요.";
+        }
+        else if(mb_strlen($sTitle, "UTF-8") > 40){
+            return "제목은  40자 이하로 작성해 주세요.";
+        }
+        $bCheck = $this->oBoardService->update($sTitle, $sContent, $nBoardId);
         return $bCheck;
     }
 
     // create페이지 get방식
     public function checkWritePermission()
     {
-        $oUserDAO = new UserDAO();
+        if(isset($_SESSION['adminId'])) {
+            return null;
+        }
         if (! isset($_SESSION['userId'])) {
             return "로그인부터 해주세요.";
         }
-        $aUser = $oUserDAO->findByUserName($_SESSION['userName']);
-        if ($aUser['nMbtiSeq'] != $_GET['id']) {
+        $nMbtiId = $this->oUserService->findMbtiIdByUserName($_SESSION['userName']);
+        if ($nMbtiId != $_GET['id']) {
             return "자신의 mbti 게시판을 이용해주세요.";
         }
+        
         return null;
     }
 
-    public function getBoardById($nBoardId)
+    public function getBoardById()
     {
-        $oBoardService = new BoardService();
-        $aBoard = $oBoardService->findById($nBoardId);
-        if(isset($_SESSION['userName'])) {
+        $nBoardId = $_GET['id'];
+        $aBoard = $this->oBoardService->findById($nBoardId);
+        if (isset($_SESSION['userName'])) {
             if ($_SESSION['userName'] == $aBoard['sID']) {
                 $aBoard['checkUser'] = true;
-            }
-            else {
+            } else {
                 $aBoard['checkUser'] = false;
             }
-        }
-        else {
+        } else {
             $aBoard['checkUser'] = false;
         }
-        $outputData = json_encode($aBoard, JSON_UNESCAPED_UNICODE);     
+        $outputData = json_encode($aBoard, JSON_UNESCAPED_UNICODE);
         return $outputData;
     }
-    //게시물 삭제
-    public function deleteById($nBoardId)
+
+    // 게시물 삭제
+    public function deleteById()
     {
-        $oBoardService = new BoardService();
-        if(isset($_SESSION['userId'])){
-            if($oBoardService->findWriterById($nBoardId)==$_SESSION['userId']) {
-                $oBoardService = new BoardService();
-                $oBoardService->deleteById($nBoardId);
-                return true;
-            }          
+        $nBoardId= $_GET['id'];
+        if (isset($_SESSION['userId'])) {
+            if ($this->oBoardService->findWriterById($nBoardId) == $_SESSION['userId']) {             
+                return $this->oBoardService->deleteById($nBoardId);
+            }
+        }
+        if(isset($_SESSION['adminId'])) {
+            return $this->oBoardService->deleteById($nBoardId);
         }
         return false;
-       
     }
-    //댓글 삭제
-    public function deleteByCommentId($nCommentId)
+
+    // 댓글 삭제
+    public function deleteByCommentId()
     {
-        $CommentService = new CommentService();
-        $CommentService->deleteByCommentId($nCommentId);
+        $nCommentId = $_GET['id'];
+        if (isset($_SESSION['userId'])) {
+            if ($this->oCommentService->findWriterById($nCommentId) == $_SESSION['userId']) {
+                return $this->oCommentService->deleteByCommentId($nCommentId);
+            }
+        }
+        return flase;
     }
-    
-    
-    /*-----------------좋아요 부분-----------------*/
+
+    /* -----------------좋아요 부분----------------- */
     public function getRecommentByUserIdAndBoardId()
     {
-        $oRecommendService = new RecommendService();
-        $bRecommend = $oRecommendService->getByUserIdAndBoardId($_SESSION['userId'], $_GET['id']);
-        
+        $bRecommend = $this->oRecommendService->getByUserIdAndBoardId($_SESSION['userId'], $_GET['id']);
+
         return $bRecommend;
     }
-    
+
     public function recommend()
     {
-        $oRecommendService = new RecommendService();
-        $bRecommend = $oRecommendService->recommend($_SESSION['userId'], $_GET['id']);
-        
+        $bRecommend = $this->oRecommendService->recommend($_SESSION['userId'], $_GET['id']);
+
         return $bRecommend;
     }
-    
 }

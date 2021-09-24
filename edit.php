@@ -14,7 +14,7 @@ require_once ('include/navmenu.php');
 			<div class="form-group">
 				<textarea class="form-control" name="content" id="content" cols="100" rows="30" placeholder="내용을 작성해주세요"></textarea>
 			</div>
-			</br> <input type="file" name="SelectFile" />
+			
 		</fieldset>
 		</br>
 		<button onclick="clickEditBtn();" type="submit" name="submit" class="btn btn-primary">수정하기</button>

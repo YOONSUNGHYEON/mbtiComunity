@@ -10,15 +10,21 @@ else if($_GET['method'] == 'getNameById') {
 
 class MbtiController
 {
+    
+    private $oMbtiService;
+    
+    function __construct()
+    {
+        $this->oMbtiService = new MbtiService();
+    }
+    
     public function getNameById($nId) {
-        $oMbtiService = new MbtiService();
-        $sMbtiName = $oMbtiService->findNameById($nId);
+        $sMbtiName = $this->oMbtiService->findNameById($nId);
         return $sMbtiName;
     }
 
     public function getMbtiList() {
-        $oMbtiService = new MbtiService();
-        $aMbtiOtionList = $oMbtiService->findMbtiList();
+        $aMbtiOtionList = $this->oMbtiService->findMbtiList();
         $mbtiData[] = array();
         foreach($aMbtiOtionList as $aMbtiOtion) {
             array_push($mbtiData, $aMbtiOtion);

@@ -56,14 +56,14 @@ function getListByOptionId(page) {
 		dataType: "json",
 		success: function(data) {
 			let boardTable = "";
-			for (let i = 1; i <= data['currentCount']; i++) {
+			for (let i = 1; i <= data['nCurrentCount']; i++) {
 				boardTable += '<tr style="cursor:pointer;">';
-				boardTable += '<th class="content-th" scope="row"><div><a class="board-a" href="view.php?optionId=' + nBoardOptionId + '&id=' + data[i]['nBoardSeq'] +  '&page=' +data["pageData"]["currentPage"] + '">' + data[i]['sTitle'] + '</a></div>';
+				boardTable += '<th class="content-th" scope="row"><div><a class="board-a" href="view.php?optionId=' + nBoardOptionId + '&id=' + data[i]['nBoardSeq'] +  '&page=' +data["pageData"]["nCurrentPage"] + '">' + data[i]['sTitle'] + '</a></div>';
 				boardTable += '<td class="content-th">' + data[i]['sID'] + '</td>';
 				boardTable += '<td class="content-th">' + data[i]['nHit'] + '</td>';
 				boardTable += '<td class="content-th">' + data[i]['nCommentCount'] + '</td>';
 				boardTable += '<td class="content-th">' + data[i]['dtCreateDate'] + '</td>';
-				if(data["checkAdmin"]==true) {
+				if(data["nCheckAdmin"]==true) {
 					boardTable += "<td class='content-th'><button id='delete' onclick='deleteBoard(" + data[i]['nBoardSeq']+ "," + page + ");' class='btn-submit'>삭제</button></td>";
 				}
 				boardTable += '</tr>';
@@ -71,9 +71,9 @@ function getListByOptionId(page) {
 			$("#boardTable").html(boardTable);
 			
 			let pagingHtml="";
-			pagingHtml+="<li class='page-item'><a class='page-link' href='javascript:getListByOptionId(" + data["pageData"]["startPage"]+")'>&laquo;</a></li>";
-			for (var i = data["pageData"]['startPage']; i <= data["pageData"]["endPage"]; i++) {
-				if (i == data["pageData"]["currentPage"]) {
+			pagingHtml+="<li class='page-item'><a class='page-link' href='javascript:getListByOptionId(" + data["pageData"]["nStartPage"]+")'>&laquo;</a></li>";
+			for (var i = data["pageData"]['nStartPage']; i <= data["pageData"]["nEndPage"]; i++) {
+				if (i == data["pageData"]["nCurrentPage"]) {
 					pagingHtml += "<li class='page-item active'>";
 				} else {
 					pagingHtml += "<li class=page-item>";
@@ -81,7 +81,7 @@ function getListByOptionId(page) {
 				pagingHtml += "<a class=page-link href='javascript:getListByOptionId("+i+")'>" + i;
 				pagingHtml += "</a></li>";
 			}
-			pagingHtml+="<li class='page-item'><a class='page-link' href='javascript:getListByOptionId(" + data["pageData"]["endPage"]+")'>&raquo;</a></li>";
+			pagingHtml+="<li class='page-item'><a class='page-link' href='javascript:getListByOptionId(" + data["pageData"]["nEndPage"]+")'>&raquo;</a></li>";
 			$('#pagination').empty();
 			$('#pagination').html(pagingHtml);
 

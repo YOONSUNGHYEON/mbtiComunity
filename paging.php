@@ -1,38 +1,41 @@
 <?php
 
-function paging($rowCount, $currentPage = null)
+function paging($nRowCount, $nCurrentPage = null)
 {
-    $blockCount = 10;
-    $blockPage = 10;
+    $nBlockCount = 10;
+    $nBlockPage = 10;
 
+    if ($nCurrentPage == null) {
+        $nCurrentPage = 1;
+    }
 
-    if ($currentPage == null)
-        $currentPage = 1;
+    $nTotalPage = floor(($nRowCount - 1) / $nBlockPage) + 1;
 
-    $totalPage = floor(($rowCount - 1) / $blockPage) + 1;
+    if ($nTotalPage < $nCurrentPage) {
+        $nCurrentPage = $nTotalPage;
+    }
 
-    if ($totalPage < $currentPage)
-        $currentPage = $totalPage;
+    if ($nCurrentPage < 1) {
+        $nCurrentPage = 1;
+    }
 
-    if ($currentPage < 1)
-        $currentPage = 1;
+    $data['nStartCount'] = ($nCurrentPage - 1) * $nBlockCount;
 
-    $data['startCount'] = ($currentPage - 1) * $blockCount;
+    $data['nStartPage'] = floor(($nCurrentPage - 1) / $nBlockPage) * $nBlockPage + 1;
+    $data['nEndPage'] = $data['nStartPage'] + $nBlockCount - 1;
 
-    $data['startPage'] = floor(($currentPage - 1) / $blockPage) * $blockPage + 1;
-    $data['endPage'] = $data['startPage'] + $blockCount - 1;
+    if ($data['nEndPage'] > $nTotalPage) {
+        $data['nEndPage'] = $nTotalPage;
+    }
 
-    if ($data['endPage'] > $totalPage)
-        $data['endPage'] = $totalPage;
-
-    $data['limitArray'] = Array(
-        $data['startCount'],
-        $blockCount
+    $data['aLimit'] = Array(
+        $data['nStartCount'],
+        $nBlockCount
     );
 
-    $data['currentPage'] = $currentPage;
-    $data['blockPage'] = $blockPage;
-    $data['totalPage'] = $totalPage;
-    $data['blockCount'] = $blockCount;
+    $data['nCurrentPage'] = $nCurrentPage;
+    $data['nBlockPage'] = $nBlockPage;
+    $data['nTotalPage'] = $nTotalPage;
+    $data['nBlockCount'] = $nBlockCount;
     return $data;
 }

@@ -30,11 +30,12 @@ function login(){
 					location.href='./index.php';
 				}
 				else {
-					alert('아이디 혹은 비밀번호를 확인하세요.');
+					console.log(result);
+					alert(result);
 				}
             },
             error: function (request, status, error){        
-                console.log(error)
+                
             }
         }) 
 

@@ -1,14 +1,16 @@
 <?php
-require_once 'application/DAO/Mbti.php';
-session_start();
+require_once ($_SERVER["DOCUMENT_ROOT"] . '/mbtiCommunity/application/DAO/Mbti.php');
 
 class MbtiService
 {
+    private $oMbtiDAO;
+ 
+    function __construct() {
+        $this->oMbtiDAO = new MbtiDAO();
 
-    public function findMbtiList()
-    {
-        $oMbtiDAO = new MbtiDAO();
-        $aMbtiList = $oMbtiDAO->findMbtiList();
+    }  
+    public function findMbtiList() {
+        $aMbtiList = $this->oMbtiDAO->findMbtiList();
         if ($aMbtiList != NULL) {
             return $aMbtiList;
         } else {
@@ -16,10 +18,8 @@ class MbtiService
         }
     }
 
-    public function findNameById($nId)
-    {
-        $oMbtiDAO = new MbtiDAO();
-        $sMbtiName = $oMbtiDAO->findNameById($nId);
+    public function findNameById($nId) {
+        $sMbtiName = $this->oMbtiDAO->findNameById($nId);
         if ($sMbtiName != NULL) {
             return $sMbtiName;
         } else {

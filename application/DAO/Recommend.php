@@ -1,5 +1,5 @@
 <?php 
-require_once ($_SERVER["DOCUMENT_ROOT"] . '/MbtiCommunity/include/pdoConnect.php');
+require_once ($_SERVER["DOCUMENT_ROOT"] . '/mbtiCommunity/include/pdoConnect.php');
 class RecommendDAO {
     private $pdo;
     
@@ -10,11 +10,18 @@ class RecommendDAO {
     }
     //처음 추천 누르기
     public function create($nUserId, $nBoardId) {
-        $sql = $this->pdo->prepare("INSERT INTO tRecommendList (nMemberSeq, nBoardSeq, nCheck)
-                      VALUES (:nUserId, :nBoardId, 1)");
-        $sql->bindValue(":nUserId",$nUserId);
-        $sql->bindValue(":nBoardId",$nBoardId);
-        $sql->execute();
+        $sQuery = ' INSERT INTO tRecommendList 
+                                (nMemberSeq,
+                                 nBoardSeq,  
+                                 nCheck)
+                    VALUES      (:nUserId,
+                                 :nBoardId,      
+                                 1) ';
+        
+        $oPdoStatement = $this->pdo->prepare($sQuery);
+        $oPdoStatement->bindValue(":nUserId",$nUserId);
+        $oPdoStatement->bindValue(":nBoardId",$nBoardId);
+        $oPdoStatement->execute();
     } 
     
     //추천 값 변경
@@ -22,10 +29,17 @@ class RecommendDAO {
     {
         try {
             $this->pdo->beginTransaction();
-            $sql =  $this->pdo->prepare("UPDATE tRecommendList SET nCheck = :nCheck WHERE nRecommendSeq = :nRecommendId");
-            $sql->bindValue(":nCheck", $nCheck);
-            $sql->bindValue(":nRecommendId", $nRecommendId);
-            $sql->execute();
+            $sQuery = ' UPDATE 
+                            tRecommendList 
+                        SET 
+                            nCheck = :nCheck 
+                        WHERE 
+                            nRecommendSeq = :nRecommendId ';
+            
+            $oPdoStatement =  $this->pdo->prepare($sQuery);
+            $oPdoStatement->bindValue(":nCheck", $nCheck);
+            $oPdoStatement->bindValue(":nRecommendId", $nRecommendId);
+            $oPdoStatement->execute();
             $this->pdo->commit();
             return true;
         } catch (Exception $e) {
@@ -39,20 +53,38 @@ class RecommendDAO {
     
     //해당 게시물에 좋아요 눌렀는지 여부
     public function getByUserIdAndBoardId($nUserId, $nBoardId) {
-        $sql = $this->pdo->prepare("SELECT * FROM tRecommendList where nBoardSeq=:nBoardId AND nMemberSeq=:nUserId");
-        $sql->bindValue(":nBoardId", $nBoardId);
-        $sql->bindValue(":nUserId", $nUserId);
-        $sql -> execute();
-        $row = $sql -> fetch();
-        return $row;
+        $sQuery = ' SELECT 
+                        * 
+                    FROM 
+                        tRecommendList 
+                    WHERE 
+                        nBoardSeq=:nBoardId 
+                    AND 
+                        nMemberSeq=:nUserId ';
+        
+        $oPdoStatement = $this->pdo->prepare($sQuery);
+        $oPdoStatement->bindValue(":nBoardId", $nBoardId);
+        $oPdoStatement->bindValue(":nUserId", $nUserId);
+        $oPdoStatement -> execute();
+        $aRecommend = $oPdoStatement -> fetch();
+        return $aRecommend;
     }
     
     //게시물 좋아요 수 리턴
     public function getCountByBoardId($nBoardId) {
-        $sql = $this->pdo->prepare("SELECT count(*) FROM tRecommendList where nBoardSeq=:nId");
-        $sql->bindValue(":nId", $nBoardId);
-        $sql -> execute();
-        $row = $sql -> fetch();
-        return $row['count(*)'];
+        $sQuery = ' SELECT 
+                        count(*) 
+                    FROM 
+                        tRecommendList 
+                    WHERE 
+                        nBoardSeq = :nId 
+                    AND 
+                        nCheck = 1 ';
+        
+        $oPdoStatement = $this->pdo->prepare($sQuery);
+        $oPdoStatement->bindValue(":nId", $nBoardId);
+        $oPdoStatement -> execute();
+        $nRecommendCount =  $oPdoStatement ->fetchColumn();
+        return $nRecommendCount;
     }
 }

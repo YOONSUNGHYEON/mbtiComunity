@@ -3,8 +3,6 @@ $(window).load(function() {
 });
 
 function checkSession(){
-	
-	
 	$.ajax({
 		type: 'GET',
 		url: "UserController.php?method=session",
@@ -12,7 +10,7 @@ function checkSession(){
 		success: function(bSession) {
 			let a="";
 			if(bSession==true) {
-				a+='<a href="logout.php">Log out</a>'; 
+				a+='<a href="javascript:clickLogout();">Log out</a>'; 
 			}
 			else {
 				a+='<a href="login.php">Log In  |  </a>';
@@ -20,6 +18,18 @@ function checkSession(){
 			}
 		$("#login-logout-register").append(a);
 			
+		}
+	});
+}
+
+function clickLogout(){
+	$.ajax({
+		type: 'GET',
+		url: "UserController.php?method=logout",
+		dataType: "text",
+		success: function(result) {
+			alert("로그아웃 되었습니다.");
+			location.href = "./index.php";
 		}
 	});
 }

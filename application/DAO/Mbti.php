@@ -1,5 +1,5 @@
 <?php 
-require_once ($_SERVER["DOCUMENT_ROOT"] . '/MbtiCommunity/include/pdoConnect.php');
+require_once ($_SERVER["DOCUMENT_ROOT"] . '/mbtiCommunity/include/pdoConnect.php');
 class MbtiDAO {
     private $pdo;
     
@@ -10,24 +10,36 @@ class MbtiDAO {
     }
     //MBTI 옵션 목록
     public function findMbtiList() {
-        $sql = $this->pdo->prepare("SELECT * FROM tMbtiOption");
-        $sql->execute();
-        $result = array();
-        while($row= $sql-> fetch(PDO::FETCH_ASSOC)) {
-            $result[] = $row;
+        $sQuery = ' SELECT 
+                        * 
+                    FROM 
+                        tMbtiOption ';
+        
+        $oPdoStatement = $this->pdo->prepare($sQuery);
+        $oPdoStatement->execute();
+        $aMbtiList = array();
+        while($aMbtiRow= $oPdoStatement-> fetch(PDO::FETCH_ASSOC)) {
+            $aMbtiList[] = $aMbtiRow;
         }
         $this->pdo = null;
-        return $result;
+        return $aMbtiList;
     }
     
     //id에를 주면 mbti 이름 반환
     public function findNameById($nId) {
-        $sql = $this->pdo->prepare("SELECT sName FROM tMbtiOption WHERE nMbtiSeq = :nId");
-        $sql->bindValue(":nId", $nId);
-        $sql->execute();
-        $row = $sql ->fetchColumn();
+        $sQuery = ' SELECT 
+                        sName
+                    FROM
+                        tMbtiOption
+                    WHERE
+                        nMbtiSeq = :nId ';
+        
+        $oPdoStatement = $this->pdo->prepare();
+        $oPdoStatement->bindValue(":nId", $nId);
+        $oPdoStatement->execute();
+        $sMbtiName = $oPdoStatement ->fetchColumn();
         $this->pdo = null;
-        return $row;
+        return $sMbtiName;
         
     }
 }
