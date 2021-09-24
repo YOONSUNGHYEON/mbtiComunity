@@ -14,7 +14,7 @@ $responses = array();
 while ($row = mysqli_fetch_array($data)) {
     array_push($responses, $row);
 }
-mysqli_close($dbc);
+
 echo ' <div id="main-wrapper" class="content">';
 echo '<h1>MBTI Community</h1>';
 echo '<div id="content-wrapper" class="">';

@@ -1,25 +1,7 @@
-.board-a {
-	text-decoration: none;
-	color:#333;
-}
 .title-th{
 
 	width: 800px;
 }
 .content-th{
 	text-align: left;
-}
-
-.write-btn
-{
-	width:110px;
-	height:45px;
-	float: right;
-	font-size: 13px;
-	margin-bottom: 10px;
-}
-
-.board-form
-{
-	
 }
