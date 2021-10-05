@@ -34,6 +34,8 @@ if ($_GET['method'] == 'findBoardOptionList') {
     echo $oBoardController->recommend();
 } else if ($_GET['method'] == 'checkWritePermission') {
 	echo $oBoardController->checkWritePermission();
+} else if ($_GET['method'] == 'checkEditPermission') {
+	echo $oBoardController->checkEditPermission();
 }
 
 
@@ -134,7 +136,8 @@ class BoardController
         $sTitle = $_POST['title'];
         $sContent = $_POST['content'];
         $nBoardId = $_GET['id'];
-        if(empty($sTitle) || empty($sContent) || empty($nBoardId) ) {
+        $aBoard = $this->oBoardService->findById($nBoardId);
+    	 if(empty($sTitle) || empty($sContent) || empty($nBoardId) ) {
             return "빈칸을 채워주세요.";
         }
         else if(mb_strlen($sTitle, "UTF-8") > 40){
@@ -160,7 +163,18 @@ class BoardController
         
         return null;
     }
-
+    // edit페이지 get방식
+    public function checkEditPermission()
+    {
+    	$nBoardId = $_GET['id'];
+    	$aBoard = $this->oBoardService->findById($nBoardId);
+    	if (! isset($_SESSION['userId'])) {
+    		return "로그인부터 해주세요.";
+    	} else if($_SESSION['userName'] != $aBoard['sID']) {
+    		return "접근 거부";		
+    	}    	
+    	return null;
+    }
     public function getBoardById()
     {
         $nBoardId = $_GET['id'];

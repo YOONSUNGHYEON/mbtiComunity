@@ -1,7 +1,24 @@
 window.onload = function() {
+	console.log("ddd");
+	checkEditPermission();
 	findByBoardId();
 }
+function checkEditPermission() {
+	const nBoardId = getParam('id');
+	const nOptionId = getParam('optionId');
+	console.log(nBoardId);
+	$.ajax({
+		type: 'GET',
+		url: "BoardController.php?method=checkEditPermission&id=" + nBoardId,
+		dataType: "text",
+		success: function(sResult) {
+			if (sResult != "") {
+				location.href =  'view.php?optionId=' + nOptionId + '&id=' + nBoardId;
+			}
 
+		}
+	});
+}
 
 function getParam(sMethod) {
 	let params = new URLSearchParams(location.search);
