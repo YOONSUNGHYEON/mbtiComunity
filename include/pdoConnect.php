@@ -4,7 +4,7 @@ class pdoConnect
 {
 
     private $dbHost = "127.0.0.1";
-    private $dbName = "dbCommunity";
+    private $dbName = "dbCommunity2";
     private $dbUser = "zc753951";
     private $dbPass = "7566";
     private $dbChar = "utf8"; 

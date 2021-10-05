@@ -1,14 +1,14 @@
-window.onload=function(){
+window.onload = function() {
 	checkSession();
 }
-function checkSession(){
+function checkSession() {
 	$.ajax({
 		type: 'GET',
 		url: "UserController.php?method=session",
 		dataType: "text",
 		success: function(bSession) {
-			if(bSession==true) {
-				location.href='./index.php';
+			if (bSession == true) {
+				location.href = './index.php';
 			}
 		}
 	});
@@ -16,28 +16,25 @@ function checkSession(){
 
 
 
-function login(){
-	 $.ajax({
-            url: "UserController.php?method=login",
-            type: "POST",
-            data: {
-					username:$('#username').val(),
-					password:$('#password').val()
-			}, 
-            success: function(result){
-				if(result == true) {
-					alert('로그인 성공!');
-					location.href='./index.php';
-				}
-				else {
-					console.log(result);
-					alert(result);
-				}
-            },
-            error: function (request, status, error){        
-                
-            }
-        }) 
+function login() {
+	$.ajax({
+		url: "UserController.php?method=login",
+		type: "POST",
+		data: {
+			username: $('#username').val(),
+			password: $('#password').val()
+		},
+		success: function(result) {
+			if (result == true) {
+				alert('로그인 성공!');
+				location.href = './index.php';
+			}
+			else {
+				alert(result);
+			}
+		}
+
+	})
 
 }
 

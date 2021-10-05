@@ -6,10 +6,10 @@ window.onload = function() {
 
 function getParam(sMethod) {
 	let params = new URLSearchParams(location.search);
-	if(sMethod=='page') {
+	if (sMethod == 'page') {
 		return params.get('page');
 	}
-	else if(sMethod=='optionId') {
+	else if (sMethod == 'optionId') {
 		return params.get('id');
 	}
 }
@@ -17,7 +17,7 @@ function getParam(sMethod) {
 function getBoardOptionIdParam() {
 	let params = new URLSearchParams(location.search);
 	let BoardOptionId = params.get('id');
-	
+
 	return BoardOptionId;
 }
 function clickCreateBtn() {
@@ -54,34 +54,34 @@ function getListByOptionId(page) {
 		type: 'GET',
 		url: "BoardController.php?method=board&id=" + nBoardOptionId + "&page=" + page,
 		dataType: "json",
-		success: function(data) {
+		success: function(boardPageData) {
 			let boardTable = "";
-			for (let i = 1; i <= data['nCurrentCount']; i++) {
+			for (let i = 1; i <= boardPageData['nCurrentCount']; i++) {
 				boardTable += '<tr style="cursor:pointer;">';
-				boardTable += '<th class="content-th" scope="row"><div><a class="board-a" href="view.php?optionId=' + nBoardOptionId + '&id=' + data[i]['nBoardSeq'] +  '&page=' +data["pageData"]["nCurrentPage"] + '">' + data[i]['sTitle'] + '</a></div>';
-				boardTable += '<td class="content-th">' + data[i]['sID'] + '</td>';
-				boardTable += '<td class="content-th">' + data[i]['nHit'] + '</td>';
-				boardTable += '<td class="content-th">' + data[i]['nCommentCount'] + '</td>';
-				boardTable += '<td class="content-th">' + data[i]['dtCreateDate'] + '</td>';
-				if(data["nCheckAdmin"]==true) {
-					boardTable += "<td class='content-th'><button id='delete' onclick='deleteBoard(" + data[i]['nBoardSeq']+ "," + page + ");' class='btn-submit'>삭제</button></td>";
+				boardTable += '<th class="content-th" scope="row"><div><a class="board-a" href="view.php?optionId=' + nBoardOptionId + '&id=' + boardPageData[i]['nBoardSeq'] + '&page=' + boardPageData["pageData"]["nCurrentPage"] + '">' + boardPageData[i]['sTitle'] + '</a></div>';
+				boardTable += '<td class="content-th">' + boardPageData[i]['sID'] + '</td>';
+				boardTable += '<td class="content-th">' + boardPageData[i]['nHit'] + '</td>';
+				boardTable += '<td class="content-th">' + boardPageData[i]['nCommentCount'] + '</td>';
+				boardTable += '<td class="content-th">' + boardPageData[i]['dtCreateDate'] + '</td>';
+				if (boardPageData["nCheckAdmin"] == true) {
+					boardTable += "<td class='content-th'><button id='delete' onclick='deleteBoard(" + boardPageData[i]['nBoardSeq'] + "," + page + ");' class='btn-submit'>삭제</button></td>";
 				}
 				boardTable += '</tr>';
 			}
 			$("#boardTable").html(boardTable);
-			
-			let pagingHtml="";
-			pagingHtml+="<li class='page-item'><a class='page-link' href='javascript:getListByOptionId(" + data["pageData"]["nStartPage"]+")'>&laquo;</a></li>";
-			for (var i = data["pageData"]['nStartPage']; i <= data["pageData"]["nEndPage"]; i++) {
-				if (i == data["pageData"]["nCurrentPage"]) {
+
+			let pagingHtml = "";
+			pagingHtml += "<li class='page-item'><a class='page-link' href='javascript:getListByOptionId(" + boardPageData["pageData"]["nStartPage"] + ")'>&laquo;</a></li>";
+			for (var i = boardPageData["pageData"]['nStartPage']; i <= boardPageData["pageData"]["nEndPage"]; i++) {
+				if (i == boardPageData["pageData"]["nCurrentPage"]) {
 					pagingHtml += "<li class='page-item active'>";
 				} else {
 					pagingHtml += "<li class=page-item>";
 				}
-				pagingHtml += "<a class=page-link href='javascript:getListByOptionId("+i+")'>" + i;
+				pagingHtml += "<a class=page-link href='javascript:getListByOptionId(" + i + ")'>" + i;
 				pagingHtml += "</a></li>";
 			}
-			pagingHtml+="<li class='page-item'><a class='page-link' href='javascript:getListByOptionId(" + data["pageData"]["nEndPage"]+")'>&raquo;</a></li>";
+			pagingHtml += "<li class='page-item'><a class='page-link' href='javascript:getListByOptionId(" + boardPageData["pageData"]["nEndPage"] + ")'>&raquo;</a></li>";
 			$('#pagination').empty();
 			$('#pagination').html(pagingHtml);
 

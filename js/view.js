@@ -19,7 +19,7 @@ function getParam(sMethod) {
 function goLastPage() {
 	let nOptionId = getParam('optionId');
 	let nPage = getParam('page');
-	location.href = 'board.php?id=' + nOptionId+'&page='+nPage;
+	location.href = 'board.php?id=' + nOptionId + '&page=' + nPage;
 }
 //해당 게시물 내용 가져오기
 function getBoardById() {
@@ -54,7 +54,8 @@ function deleteBoard() {
 		type: 'DELETE',
 		url: "BoardController.php?method=delete&id=" + nBoardId,
 		success: function(deleteResult) {
-			if(deleteResult==true) {
+			console.log(deleteResult);
+			if (deleteResult == true) {
 				alert("삭제 성공했습니다.");
 			}
 			else {
@@ -144,14 +145,14 @@ function getCommentListByBoardId() {
 //////////////////////////////////
 
 //좋아요 값 가져오기
-function getRecommentByUserIdAndBoardId(){
+function getRecommentByUserIdAndBoardId() {
 	const nBoardId = getParam("id");
 	$.ajax({
 		type: 'GET',
 		url: "BoardController.php?method=getRecommentByUserIdAndBoardId&id=" + nBoardId,
 		dataType: "json",
 		success: function(recommend) {
-			if(recommend==true) {
+			if (recommend == true) {
 				$(".btn-like").attr("src", "image/fullHeart.png");
 			}
 			else {
@@ -170,7 +171,7 @@ function clickLike() {
 		url: "BoardController.php?method=recommend&id=" + nBoardId,
 		dataType: "text",
 		success: function(recommend) {
-			if(recommend==true) {
+			if (recommend == true) {
 				$(".btn-like").attr("src", "image/fullHeart.png");
 			}
 			else {

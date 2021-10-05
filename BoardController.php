@@ -7,6 +7,7 @@ require_once ('application/Service/Recommend.php');
 session_start();
 
 $oBoardController = new BoardController();
+// $_GET['method'] param check
 if ($_GET['method'] == 'findBoardOptionList') {
     echo $oBoardController->findOptionList();
 } else if ($_GET['method'] == 'getOptionNameByOptionId') {
@@ -29,11 +30,12 @@ if ($_GET['method'] == 'findBoardOptionList') {
     $oBoardController->deleteByCommentId();
 } else if ($_GET['method'] == 'getRecommentByUserIdAndBoardId') {
     echo $oBoardController->getRecommentByUserIdAndBoardId();
-} else if ($_GET['method'] == 'recommend') {
+} else if ('recommend' == $_GET['method']) {
     echo $oBoardController->recommend();
 } else if ($_GET['method'] == 'checkWritePermission') {
-    echo $oBoardController->checkWritePermission();
+	echo $oBoardController->checkWritePermission();
 }
+
 
 class BoardController
 {
@@ -114,20 +116,17 @@ class BoardController
         return "댓글을 입력해주세요.";
     }
 
-    public function create()
-    {
+    public function create() {
         $sTitle = $_POST['title'];
         $sContent = $_POST['content'];
         $nOptionId = $_GET['id'];
-        if(empty($sTitle) || empty($sContent) || empty($nOptionId) ) {
+        if (empty($sTitle) || empty($sContent) || empty($nOptionId) ) {
             return "빈칸을 채워주세요.";
-        }  
-        else if(mb_strlen($sTitle, "UTF-8") > 40){
+        } else if(mb_strlen($sTitle, "UTF-8") > 40){
             return "제목은  40자 이하로 작성해 주세요.";
         }
         $nBoardId = $this->oBoardService->create($sTitle, $sContent, $nOptionId);
         return $nBoardId;
-       
     }
 
     public function update()
@@ -135,7 +134,7 @@ class BoardController
         $sTitle = $_POST['title'];
         $sContent = $_POST['content'];
         $nBoardId = $_GET['id'];
-        if(empty($sTitle) || empty($sContent) || empty($nOptionId) ) {
+        if(empty($sTitle) || empty($sContent) || empty($nBoardId) ) {
             return "빈칸을 채워주세요.";
         }
         else if(mb_strlen($sTitle, "UTF-8") > 40){
@@ -185,7 +184,7 @@ class BoardController
         $nBoardId= $_GET['id'];
         if (isset($_SESSION['userId'])) {
             if ($this->oBoardService->findWriterById($nBoardId) == $_SESSION['userId']) {             
-                return $this->oBoardService->deleteById($nBoardId);
+            	return $this->oBoardService->deleteById($nBoardId);
             }
         }
         if(isset($_SESSION['adminId'])) {
